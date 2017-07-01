@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      text-decoration: none;
+    }
+    #carousel {
+      margin: 50px auto;
+      width: 350px;
+      height: 250px;
+      overflow: hidden;
+      position: relative;
+    }
+    #img-ct {
+      position: absolute;
+    }
+    #img-ct li {
+      float: left;
+    }
+    #img-ct li img {
+      width: 350px;
+      height: 250px;
+    }
+    #carousel .arrow {
+      width: 50px;
+      height: 50px;
+      line-height: 50px;
+      text-align: center;
+      color: white;
+      font-size: 40px;
+      position: absolute;
+      top: 50%;
+      margin-top: -25px;
+      z-index: 1;
+    }
+    #carousel .arrow:hover {
+      opacity: 0.4;
+    }
+    #carousel .pre {
+      left: 10px;
+    }
+    #carousel .next {
+      right: 10px;
+    }
+    #carousel #bullet {
+      width: 100%;
+      position: absolute;
+      bottom: 15px;
+      text-align: center;
+      z-index: 1;
+      font-size: 0;
+    }
+    #bullet li {
+      width: 40px;
+      height: 10px;
+      display: inline-block;
+      border: 2px solid red;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 0 3px;
+    }
+    #bullet li.active {
+      background-color: grey;
+    }
+  </style>
+</head>
+<body>
+<div id="carousel">
+  <ul id="img-ct">
+    <li data-id=0>
+      <img src="img/1.jpg" alt="">
+    </li>
+    <li data-id=1>
+      <img src="img/2.jpg" alt="">
+    </li>
+    <li data-id=2>
+      <img src="img/3.jpg" alt="">
+    </li>
+    <li data-id=3>
+      <img src="img/4.jpg" alt="">
+    </li>
+  </ul>
+  <a class="pre arrow" href="#"><</a>
+  <a class="next arrow" href="#">></a>
+  <ul id="bullet">
+    <li class="active"></li>
+    <li></li>
+    <li></li>
+    <li></li>
+  </ul>
+</div>
+
+
+
+
+
+<script src="jquery-3.2.1.min.js"></script>
+<script>
+  var $imgCt = $('#img-ct')
+  var $imgs = $('#img-ct li')
+  var imgCount = $imgs.length
+  var imgWidth = $imgs.width()
+  var $preBtn = $('.pre')
+  var $nextBtn = $('.next')
+  var $bullets = $('#bullet li')
+
+  var pageIndex = 0
+  var isAnimate = false
+
+  $imgCt.append($imgs.first().clone())
+  $imgCt.prepend($imgs.last().clone())
+  $imgCt.width((imgCount + 2) * imgWidth)
+  $imgCt.css({left: -imgWidth})
+
+  $preBtn.click(function () {
+    playPre(1)
+  })
+  $nextBtn.click(function () {
+    playNext(1)
+  })
+  function playPre(num) {
+    if(isAnimate){
+      return
+    }
+    isAnimate = true
+    $imgCt.animate({
+      left: '+=' + num * imgWidth
+    }, function(){
+      pageIndex -= num
+      if(pageIndex < 0){
+        pageIndex = imgCount - 1
+        $imgCt.css({left: -imgCount * imgWidth})
+      }
+      setBullet()
+      isAnimate = false
+    })
+  }
+  function playNext(num) {
+    if(isAnimate){
+      return
+    }
+    isAnimate = true
+    $imgCt.animate({
+      left: '-=' + num * imgWidth
+    }, function(){
+      pageIndex += num
+      if(pageIndex === imgCount){
+        pageIndex = 0
+        $imgCt.css({left: -imgWidth})
+      }
+      setBullet()
+      isAnimate = false
+    })
+  }
+  function setBullet() {
+    $bullets.removeClass('active')
+            .eq(pageIndex)
+            .addClass('active')
+  }
+  $bullets.click(function () {
+    var index = $(this).index()
+    if(index > pageIndex){
+      playNext(index - pageIndex)
+    }else if(index < pageIndex){
+      playPre(pageIndex - index)
+    }
+  })
+</script>
+</body>
+</html>
